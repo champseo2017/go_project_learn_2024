@@ -22,3 +22,15 @@ go.work
 *.iml
 *.swp
 .vscode/
+
+# Ignore .dbdata directory and its contents
+.dbdata
+
+# Ignore specific file in .dbdata
+.dbdata/ib_buffer_pool
+
+# Ignore specific directory in .dbdata 
+.dbdata/cache
+
+# Ignore all files with .log extension in .dbdata
+.dbdata/*.log
