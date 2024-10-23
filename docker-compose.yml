@@ -6,7 +6,10 @@ services:
     volumes:
       - .:/app
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+      phpmyadmin:
+        condition: service_healthy
 
   db:
     image: mysql:5.7.22
@@ -21,6 +24,22 @@ services:
       - .dbdata:/var/lib/mysql
     ports:
       - 3306:3306
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "root",
+          "-p$$MYSQL_ROOT_PASSWORD",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -31,4 +50,11 @@ services:
       PMA_HOST: db
       MYSQL_ROOT_PASSWORD: root
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
